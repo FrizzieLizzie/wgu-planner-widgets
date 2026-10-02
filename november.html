@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>November Header</title><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=EB+Garamond:wght@400;500&display=swap" rel="stylesheet">
+<style>:root{--a:#1D140B;--b:#372D20;--accent:#6E391D;--glow:#C7895C;--muted:#835A3D;--ink:#F1E4D3}
+* { box-sizing: border-box; margin: 0; }
+html, body { background: #191919; }
+body { font-family: "EB Garamond", Georgia, serif; color: var(--ink); padding: 0; }
+.card {
+  border-radius: 6px; padding: 20px 24px 16px;
+  background: radial-gradient(ellipse at 88% 0%, color-mix(in srgb, var(--glow) 22%, transparent), transparent 55%),
+              linear-gradient(135deg, var(--a) 0%, var(--b) 100%);
+  box-shadow: none;
+}
+.inner { border: 1px solid color-mix(in srgb, var(--glow) 45%, transparent); padding: 16px 20px 14px; }
+.top { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; align-items: flex-end; }
+.eyebrow { font-size: 12px; letter-spacing: .28em; text-transform: uppercase; color: var(--glow); }
+h1 { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-weight: 500;
+     font-size: 50px; line-height: 1; margin: 6px 0 4px; }
+h1.sm { font-size: 34px; font-style: normal; font-weight: 600; }
+.sub { color: color-mix(in srgb, var(--ink) 75%, transparent); font-size: 16px; }
+.sub b { color: var(--glow); font-weight: 500; }
+.stats { display: flex; gap: 10px; flex-wrap: wrap; }
+.stat { min-width: 112px; padding: 9px 13px; background: color-mix(in srgb, var(--a) 60%, transparent);
+        border: 1px solid color-mix(in srgb, var(--accent) 70%, transparent); border-top: 3px solid var(--glow); }
+.stat .n { font-family: "Cormorant Garamond", serif; font-size: 32px; font-weight: 600; line-height: 1; }
+.stat .l { font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+           color: color-mix(in srgb, var(--ink) 70%, transparent); margin-top: 4px; }
+.rule { height: 1px; margin: 14px 0 12px;
+        background: linear-gradient(90deg, transparent, var(--accent), var(--glow), var(--accent), transparent); }
+.courses { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.course { padding: 10px 13px; background: color-mix(in srgb, var(--b) 70%, transparent); border-left: 4px solid var(--c, var(--glow)); }
+.code { font-size: 11px; letter-spacing: .2em; color: var(--c, var(--glow)); }
+.name { font-family: "Cormorant Garamond", serif; font-size: 21px; font-weight: 600; margin: 2px 0 3px; }
+.meta { font-size: 13px; color: color-mix(in srgb, var(--ink) 72%, transparent); }
+.bar { height: 5px; background: color-mix(in srgb, var(--ink) 14%, transparent); margin-top: 7px; }
+.bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--c, var(--glow))); }
+.note { font-size: 11px; color: color-mix(in srgb, var(--ink) 55%, transparent); margin-top: 8px; letter-spacing: .04em; }
+.palette { display: flex; margin-top: 12px; height: 8px; }
+.palette span { flex: 1; }
+@media (max-width: 560px) { h1 { font-size: 38px; } .card { padding: 12px; } .inner { padding: 12px; } }
+</style></head>
+<body>
+<div class="card"><div class="inner">
+  <div class="top">
+    <div>
+      <div class="eyebrow">Term 1 · Month II of VI</div>
+      <h1>November</h1>
+      <div class="sub">Chrysanthemum · <span id="range"></span> · <b id="today"></b></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n" id="m">–</div><div class="l" id="ml">Days left</div></div>
+      <div class="stat"><div class="n" id="k">–</div><div class="l">Days to E091 start</div></div>
+      <div class="stat"><div class="n" id="t">–</div><div class="l">Days left in term</div></div>
+    </div>
+  </div>
+  <div class="rule"></div>
+  <div class="courses">
+      <div class="course" style="--c:#E36D2F">
+        <div class="code">C715 · 3 CU · OA</div>
+        <div class="name">Organizational Behavior</div>
+        <div class="meta" data-meta='{"start": "2026-10-01", "end": "2026-11-15", "target": "2026-10-12"}'></div>
+        <div class="bar"><i data-a="2026-10-01" data-b="2026-10-12"></i></div>
+      </div>
+      <div class="course" style="--c:#E36D2F">
+        <div class="code">C483 · 4 CU · OA</div>
+        <div class="name">Principles of Management</div>
+        <div class="meta" data-meta='{"start": "2026-10-02", "end": "2027-02-01", "target": null}'></div>
+        <div class="bar"><i data-a="2026-10-02" data-b="2027-02-01"></i></div>
+      </div>
+      <div class="course" style="--c:#C7895C">
+        <div class="code">E091 · 3 CU · PA</div>
+        <div class="name">Building a Successful IT Organization</div>
+        <div class="meta" data-meta='{"start": "2026-11-15", "end": "2026-12-31", "target": null}'></div>
+        <div class="bar"><i data-a="2026-11-15" data-b="2026-12-31"></i></div>
+      </div></div>
+  <div class="note">Bars show time elapsed toward each course's target date.</div>
+  <div class="palette"><span style="background:#1D140B"></span><span style="background:#372D20"></span><span style="background:#471A09"></span><span style="background:#6E391D"></span><span style="background:#835A3D"></span></div>
+</div></div>
+<script>
+const DAY = 864e5;
+const today = new Date(); today.setHours(0, 0, 0, 0);
+const D = (s) => new Date(s + "T00:00:00");
+const daysTo = (s) => Math.round((D(s) - today) / DAY);
+const pct = (a, b) => Math.min(100, Math.max(0, (today - D(a)) / (D(b) - D(a)) * 100));
+const fmt = (s) => D(s).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+const $ = (id) => document.getElementById(id);
+
+const S = "2026-11-01", E = "2026-11-30", MON = "Nov";
+$("range").textContent = fmt(S) + " – " + fmt(E) + ", " + D(E).getFullYear();
+$("today").textContent = today.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+const before = daysTo(S), left = daysTo(E);
+if (before > 0) { $("m").textContent = before; $("ml").textContent = "Days until " + MON; }
+else if (left >= 0) { $("m").textContent = left; $("ml").textContent = "Days left in " + MON; }
+else { $("m").textContent = "✓"; $("ml").textContent = MON + " complete"; }
+const k = daysTo("2026-11-15"); $("k").textContent = k >= 0 ? k : "✓";
+$("t").textContent = Math.max(0, daysTo("2027-03-31"));
+document.querySelectorAll(".bar i").forEach(el => el.style.width = pct(el.dataset.a, el.dataset.b) + "%");
+document.querySelectorAll("[data-meta]").forEach(el => {
+  const m = JSON.parse(el.dataset.meta);
+  el.textContent = fmt(m.start) + " → " + fmt(m.end) + (m.target ? " · OA target " + fmt(m.target) : "");
+});
+</script>
+</body></html>

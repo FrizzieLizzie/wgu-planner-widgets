@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clock &amp; Pomodoro</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=EB+Garamond:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Kit 1 (Home): Back in Black, Funkie Friday, Moonscape, Decanting, Mountain Heather */
+  :root { --a:#16131F; --b:#4A3F4B; --muted:#806C79; --accent:#C1A0AC; --glow:#F0D9E4; --ink:#F7EEF2; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: #191919; }
+  body { font-family: "EB Garamond", Georgia, serif; color: var(--ink); padding: 0; }
+  .card {
+    border-radius: 6px; padding: 16px 14px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(240,217,228,.12), transparent 60%),
+                linear-gradient(160deg, var(--a), var(--b));
+    border: 1px solid rgba(193,160,172,.35);
+  }
+  .clock { display: flex; flex-direction: column; align-items: center; }
+  svg { width: 150px; height: 150px; }
+  .digital { font-family: "Cormorant Garamond", serif; font-size: 26px; font-weight: 600; margin-top: 4px; letter-spacing: .04em; }
+  .date { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); }
+  .rule { height: 1px; margin: 14px 4px; background: linear-gradient(90deg, transparent, var(--muted), var(--glow), var(--muted), transparent); }
+  .modes { display: flex; gap: 4px; justify-content: center; }
+  .modes button {
+    font: 12px "EB Garamond", serif; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--accent); background: transparent; border: 1px solid rgba(193,160,172,.35);
+    padding: 4px 8px; border-radius: 3px; cursor: pointer;
+  }
+  .modes button.on { background: var(--glow); color: var(--a); border-color: var(--glow); }
+  .timer { font-family: "Cormorant Garamond", serif; font-size: 58px; font-weight: 600; text-align: center; line-height: 1.1; margin: 8px 0 2px; }
+  .bar { height: 4px; background: rgba(247,238,242,.12); margin: 0 6px; }
+  .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--muted), var(--glow)); transition: width .5s linear; }
+  .ctrl { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+  .ctrl button {
+    font: 500 14px "EB Garamond", serif; letter-spacing: .14em; text-transform: uppercase;
+    padding: 7px 18px; border-radius: 3px; cursor: pointer;
+    border: 1px solid var(--glow); background: var(--glow); color: var(--a);
+  }
+  .ctrl button.ghost { background: transparent; color: var(--glow); }
+  .count { text-align: center; font-size: 12px; letter-spacing: .14em; color: var(--accent); margin-top: 10px; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="clock">
+    <svg viewBox="0 0 200 200" aria-label="Clock">
+      <circle cx="100" cy="100" r="94" fill="none" stroke="#806C79" stroke-width="1.5"/>
+      <circle cx="100" cy="100" r="88" fill="rgba(22,19,31,.35)" stroke="#C1A0AC" stroke-opacity=".35"/>
+      <g id="ticks"></g>
+      <line id="h" x1="100" y1="100" x2="100" y2="58" stroke="#F7EEF2" stroke-width="4" stroke-linecap="round"/>
+      <line id="m" x1="100" y1="100" x2="100" y2="34" stroke="#F0D9E4" stroke-width="2.5" stroke-linecap="round"/>
+      <line id="s" x1="100" y1="112" x2="100" y2="26" stroke="#C1A0AC" stroke-width="1"/>
+      <circle cx="100" cy="100" r="4" fill="#F0D9E4"/>
+    </svg>
+    <div class="digital" id="digital"></div>
+    <div class="date" id="date"></div>
+  </div>
+  <div class="rule"></div>
+  <div class="modes">
+    <button data-min="25" class="on">Focus</button>
+    <button data-min="5">Short</button>
+    <button data-min="15">Long</button>
+  </div>
+  <div class="timer" id="timer">25:00</div>
+  <div class="bar"><i id="prog"></i></div>
+  <div class="ctrl">
+    <button id="go">Start</button>
+    <button id="reset" class="ghost">Reset</button>
+  </div>
+  <div class="count" id="count">Sessions today · 0</div>
+</div>
+<script>
+  // ---- Clock ----
+  const ticks = document.getElementById("ticks");
+  for (let i = 0; i < 60; i++) {
+    const major = i % 5 === 0, r1 = major ? 76 : 81, a = i * 6 * Math.PI / 180;
+    const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    l.setAttribute("x1", 100 + r1 * Math.sin(a)); l.setAttribute("y1", 100 - r1 * Math.cos(a));
+    l.setAttribute("x2", 100 + 86 * Math.sin(a)); l.setAttribute("y2", 100 - 86 * Math.cos(a));
+    l.setAttribute("stroke", major ? "#F0D9E4" : "#806C79"); l.setAttribute("stroke-width", major ? 2 : 1);
+    ticks.appendChild(l);
+  }
+  const rot = (id, deg) => document.getElementById(id).setAttribute("transform", `rotate(${deg} 100 100)`);
+  function tickClock() {
+    const d = new Date(), s = d.getSeconds(), m = d.getMinutes(), h = d.getHours() % 12;
+    rot("s", s * 6); rot("m", m * 6 + s * .1); rot("h", h * 30 + m * .5);
+    document.getElementById("digital").textContent =
+      d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    document.getElementById("date").textContent =
+      d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  }
+  tickClock(); setInterval(tickClock, 1000);
+
+  // ---- Pomodoro ----
+  let total = 25 * 60, left = total, timerId = null, endAt = 0;
+  const $ = (id) => document.getElementById(id);
+  const fmt = (t) => String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(t % 60).padStart(2, "0");
+  const store = (() => { try { return window.localStorage; } catch { return null; } })();
+  const todayKey = "pomo-" + new Date().toDateString();
+  let sessions = 0;
+  try { sessions = Number(store && store.getItem(todayKey)) || 0; } catch {}
+  const render = () => {
+    $("timer").textContent = fmt(left);
+    $("prog").style.width = ((total - left) / total * 100) + "%";
+    $("count").textContent = "Sessions today · " + sessions;
+  };
+  function chime() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [660, 880, 990].forEach((f, i) => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.frequency.value = f; o.connect(g); g.connect(ctx.destination);
+        const t = ctx.currentTime + i * .35;
+        g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.25, t + .03);
+        g.gain.exponentialRampToValueAtTime(.0001, t + .6); o.start(t); o.stop(t + .65);
+      });
+    } catch {}
+  }
+  function stop() { clearInterval(timerId); timerId = null; $("go").textContent = "Start"; }
+  function step() {
+    left = Math.max(0, Math.round((endAt - Date.now()) / 1000));
+    render();
+    if (left === 0) {
+      stop(); chime();
+      if (total === 25 * 60) {
+        sessions++;
+        try { store && store.setItem(todayKey, sessions); } catch {}
+        render();
+      }
+    }
+  }
+  $("go").onclick = () => {
+    if (timerId) { stop(); return; }
+    if (left === 0) left = total;
+    endAt = Date.now() + left * 1000;
+    timerId = setInterval(step, 250);
+    $("go").textContent = "Pause";
+  };
+  $("reset").onclick = () => { stop(); left = total; render(); };
+  document.querySelectorAll(".modes button").forEach(b => b.onclick = () => {
+    document.querySelectorAll(".modes button").forEach(x => x.classList.remove("on"));
+    b.classList.add("on"); stop(); total = left = Number(b.dataset.min) * 60; render();
+  });
+  render();
+</script>
+</body>
+</html>
