@@ -4,48 +4,119 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Clock</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
 <style>
-  :root { --bg: #191919; --ink: #F0D9E4; --accent: #C1A0AC; --muted: #806C79; --edge: #4A3F4B; }
+  /* Kit 1 palette; background matches the Notion gray panel the clock sits in. */
+  :root {
+    --panel: #383836;
+    --ink: #F0D9E4;      /* Mountain Heather */
+    --rose: #C1A0AC;     /* Decanting */
+    --plum: #4A3F4B;     /* Funkie Friday */
+    --muted: #806C79;    /* Moonscape */
+    --night: #16131F;    /* Back in Black */
+  }
   * { margin: 0; box-sizing: border-box; }
-  html, body { height: 100%; background: #383836; } /* matches the Notion gray panel it sits in */
-  body { display: grid; place-items: center; }
-  svg { width: min(92vw, 92vh); height: auto; }
+  html, body { height: 100%; background: var(--panel); }
+  body { display: grid; place-items: center; padding: 6px; }
+  svg { width: min(96vw, 96vh); height: auto; display: block; }
+  text { font-family: "Cormorant Garamond", Georgia, serif; text-anchor: middle; dominant-baseline: middle; font-variant-numeric: lining-nums; }
+  .numeral { fill: var(--ink); font-weight: 600; font-size: 15px; letter-spacing: .5px; }
   .tick { stroke: var(--muted); stroke-linecap: round; }
-  .tick.major { stroke: var(--ink); }
-  .hand { stroke-linecap: round; }
-  text { font-family: "Cormorant Garamond", Georgia, serif; fill: var(--ink); text-anchor: middle; font-variant-numeric: lining-nums tabular-nums; }
+  .tick.hour { stroke: var(--rose); }
+  #time { fill: var(--ink); font-size: 13px; font-weight: 600; letter-spacing: 1.5px; }
+  #date { fill: var(--rose); font-size: 9.5px; font-style: italic; letter-spacing: .6px; }
+  #s { transition: transform .25s cubic-bezier(.4, 2.2, .6, 1); }
 </style>
 </head>
 <body>
-<svg viewBox="0 0 200 200" aria-label="Analog clock">
-  <circle cx="100" cy="100" r="96" fill="none" stroke="var(--edge)" stroke-width="1"/>
+<svg viewBox="0 0 240 240" aria-label="Analog clock">
+  <defs>
+    <radialGradient id="dial" cx="50%" cy="42%" r="62%">
+      <stop offset="0%" stop-color="#2d2433"/>
+      <stop offset="70%" stop-color="#1d1824"/>
+      <stop offset="100%" stop-color="#16131F"/>
+    </radialGradient>
+    <linearGradient id="bezel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F0D9E4"/>
+      <stop offset="45%" stop-color="#C1A0AC"/>
+      <stop offset="100%" stop-color="#806C79"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000" flood-opacity=".55"/>
+    </filter>
+  </defs>
+
+  <!-- Case and double bezel -->
+  <circle cx="120" cy="120" r="114" fill="#16131F" filter="url(#soft)"/>
+  <circle cx="120" cy="120" r="111" fill="none" stroke="url(#bezel)" stroke-width="3"/>
+  <circle cx="120" cy="120" r="105" fill="url(#dial)" stroke="#4A3F4B" stroke-width="1"/>
+  <circle cx="120" cy="120" r="101" fill="none" stroke="url(#bezel)" stroke-width=".6" opacity=".7"/>
+
   <g id="ticks"></g>
-  <text id="time" x="100" y="128" font-size="17" font-weight="600"></text>
-  <text id="date" x="100" y="144" font-size="11" style="fill: var(--accent)"></text>
-  <line id="h" class="hand" x1="100" y1="100" x2="100" y2="58" stroke="var(--ink)" stroke-width="3.2"/>
-  <line id="m" class="hand" x1="100" y1="100" x2="100" y2="34" stroke="var(--ink)" stroke-width="2"/>
-  <line id="s" class="hand" x1="100" y1="112" x2="100" y2="26" stroke="var(--accent)" stroke-width="1"/>
-  <circle cx="100" cy="100" r="3" fill="var(--accent)"/>
+  <g id="numerals"></g>
+
+  <!-- Inner chapter ring and the month's flower -->
+  <circle cx="120" cy="120" r="58" fill="none" stroke="#4A3F4B" stroke-width=".8" stroke-dasharray="1.5 3"/>
+  <image id="flower" x="100" y="60" width="40" height="40" opacity=".85" preserveAspectRatio="xMidYMid meet"/>
+
+  <text id="time" x="120" y="152"></text>
+  <text id="date" x="120" y="167"></text>
+
+  <!-- Hands: tapered hour and minute, seconds with counterweight -->
+  <g id="h" filter="url(#soft)">
+    <path d="M120 128 L116.2 120 L118.6 76 L120 66 L121.4 76 L123.8 120 Z" fill="#F0D9E4"/>
+  </g>
+  <g id="m" filter="url(#soft)">
+    <path d="M120 130 L117.4 120 L119.1 46 L120 34 L120.9 46 L122.6 120 Z" fill="#F0D9E4"/>
+  </g>
+  <g id="s">
+    <line x1="120" y1="140" x2="120" y2="28" stroke="#C1A0AC" stroke-width="1" stroke-linecap="round"/>
+    <circle cx="120" cy="136" r="3.2" fill="none" stroke="#C1A0AC" stroke-width="1"/>
+  </g>
+  <circle cx="120" cy="120" r="5" fill="url(#bezel)"/>
+  <circle cx="120" cy="120" r="1.8" fill="#16131F"/>
 </svg>
 <script>
-  const ticks = document.getElementById("ticks");
+  const NS = "http://www.w3.org/2000/svg";
+  const ticks = document.getElementById("ticks"), nums = document.getElementById("numerals");
+  const roman = ["XII", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"];
   for (let i = 0; i < 60; i++) {
-    const major = i % 5 === 0, a = i * 6 * Math.PI / 180;
-    const r1 = major ? 80 : 86, r2 = 90;
-    const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    l.setAttribute("x1", 100 + r1 * Math.sin(a)); l.setAttribute("y1", 100 - r1 * Math.cos(a));
-    l.setAttribute("x2", 100 + r2 * Math.sin(a)); l.setAttribute("y2", 100 - r2 * Math.cos(a));
-    l.setAttribute("class", "tick" + (major ? " major" : ""));
-    l.setAttribute("stroke-width", major ? 2 : 0.8);
+    const hour = i % 5 === 0, a = i * 6 * Math.PI / 180;
+    const r1 = hour ? 91 : 95, r2 = 99;
+    const l = document.createElementNS(NS, "line");
+    l.setAttribute("x1", 120 + r1 * Math.sin(a)); l.setAttribute("y1", 120 - r1 * Math.cos(a));
+    l.setAttribute("x2", 120 + r2 * Math.sin(a)); l.setAttribute("y2", 120 - r2 * Math.cos(a));
+    l.setAttribute("class", "tick" + (hour ? " hour" : ""));
+    l.setAttribute("stroke-width", hour ? 1.8 : .6);
     ticks.appendChild(l);
   }
-  const rot = (id, deg) => document.getElementById(id).setAttribute("transform", `rotate(${deg} 100 100)`);
+  roman.forEach((n, i) => {
+    const a = i * 30 * Math.PI / 180, r = 79;
+    const x = 120 + r * Math.sin(a), y = 121 - r * Math.cos(a);
+    const t = document.createElementNS(NS, "text");
+    t.setAttribute("x", x); t.setAttribute("y", y);
+    t.setAttribute("class", "numeral");
+    t.textContent = n;
+    nums.appendChild(t);
+  });
+
+  // Current month's flower from the art folder; hidden if that month's icon doesn't exist yet.
+  const month = new Date().toLocaleString("en-US", { month: "long" }).toLowerCase();
+  const flower = document.getElementById("flower");
+  const probe = new Image();
+  probe.onload = () => flower.setAttribute("href", probe.src);
+  probe.onerror = () => flower.remove();
+  probe.src = `art/icon_${month}.png`;
+
+  const rot = (id, deg) => document.getElementById(id).style.transform = `rotate(${deg}deg)`;
+  ["h", "m", "s"].forEach(id => document.getElementById(id).style.transformOrigin = "120px 120px");
   function tick() {
     const d = new Date(), s = d.getSeconds(), m = d.getMinutes(), h = d.getHours() % 12;
-    rot("s", s * 6); rot("m", m * 6 + s * 0.1); rot("h", h * 30 + m * 0.5);
-    document.getElementById("time").textContent = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", second: "2-digit" });
-    document.getElementById("date").textContent = d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+    const sHand = document.getElementById("s");
+    if (s === 0) { sHand.style.transition = "none"; rot("s", -6); void sHand.getBoundingClientRect(); sHand.style.transition = ""; }
+    rot("s", s * 6); rot("m", m * 6 + s * .1); rot("h", h * 30 + m * .5);
+    document.getElementById("time").textContent = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }).toUpperCase();
+    document.getElementById("date").textContent = d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
   }
   tick(); setInterval(tick, 1000);
 </script>
