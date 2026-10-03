@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Progress</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Template version: Year / Month / Week always; Term and Degree rows appear only when their URL options are set.
+     Options (all optional), e.g. progress.html?term=2026-08-24..2026-12-18&credits=30/120
+       term=START..END   adds a "Term" bar between those dates
+       credits=EARNED/TOTAL adds a "Degree" bar */
+  :root { --ink: #F3E6DC; --fill: #CF9D7B; --track: #162127; --edge: #3A3534; --muted: #724B39; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: #191919; color: var(--ink); font-family: Inter, system-ui, sans-serif; }
+  body { padding: 14px 12px; }
+  .row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 10px; margin-bottom: 12px; }
+  .label { font-family: "Cormorant Garamond", Georgia, serif; font-size: 15px; letter-spacing: .04em; font-variant-numeric: lining-nums; }
+  .pct { font-size: 11px; color: #B98A6C; font-variant-numeric: tabular-nums; }
+  .bar { grid-column: 1 / -1; height: 14px; border: 1px solid var(--edge); border-radius: 4px; background: var(--track); overflow: hidden; }
+  .bar > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--muted), var(--fill)); transition: width .6s ease; }
+</style>
+</head>
+<body>
+  <div id="rows"></div>
+<script>
+  const params = new URLSearchParams(location.search);
+  const frac = (start, end, now) => Math.min(1, Math.max(0, (now - start) / (end - start)));
+  const day = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+
+  function render() {
+    const now = new Date();
+    const rows = [];
+    const credits = (params.get("credits") || "").split("/").map(Number);
+    if (credits.length === 2 && credits[1] > 0) rows.push(["Degree", credits[0] / credits[1], `${credits[0]}/${credits[1]} credits`]);
+    const term = (params.get("term") || "").split("..");
+    if (term.length === 2 && term[0] && term[1]) {
+      const end = day(term[1]); end.setDate(end.getDate() + 1);
+      rows.push(["Term", frac(day(term[0]), end, now)]);
+    }
+    rows.push([String(now.getFullYear()), frac(new Date(now.getFullYear(), 0, 1), new Date(now.getFullYear() + 1, 0, 1), now)]);
+    rows.push([now.toLocaleString("en-US", { month: "long" }), frac(new Date(now.getFullYear(), now.getMonth(), 1), new Date(now.getFullYear(), now.getMonth() + 1, 1), now)]);
+    const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
+    rows.push(["Week", frac(weekStart, new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + 7), now)]);
+
+    document.getElementById("rows").innerHTML = rows.map(([label, f, note]) => {
+      const pct = Math.round(f * 100);
+      return `<div class="row"><span class="label">${label}</span><span class="pct">${note ? note + " · " : ""}${pct}%</span><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+    }).join("");
+  }
+  render();
+  setInterval(render, 60 * 1000);
+</script>
+</body>
+</html>
