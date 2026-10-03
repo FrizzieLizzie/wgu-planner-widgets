@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pomodoro</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #191919; --panel: #16131F; --ink: #F0D9E4; --accent: #C1A0AC; --muted: #806C79; --edge: #4A3F4B; }
+  * { margin: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: var(--bg); color: var(--ink); font-family: Inter, system-ui, sans-serif; }
+  body { display: grid; place-items: center; padding: 10px; }
+  .card { width: 100%; max-width: 420px; min-height: 260px; padding: 18px 16px; border-radius: 10px;
+          background: radial-gradient(120% 90% at 50% 0%, #2a2230 0%, var(--panel) 70%); border: 1px solid var(--edge);
+          display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .modes { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+  .modes button { font: 500 12px Inter, sans-serif; color: var(--ink); background: transparent; border: 1px solid var(--edge);
+                  border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+  .modes button[aria-pressed="true"] { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+  .time { font: 700 clamp(48px, 18vw, 80px)/1 "Cormorant Garamond", Georgia, serif; letter-spacing: .02em; font-variant-numeric: lining-nums tabular-nums; }
+  .controls { display: flex; align-items: center; gap: 12px; }
+  .start { font: 600 14px Inter, sans-serif; background: var(--ink); color: var(--panel); border: 0; border-radius: 999px; padding: 9px 30px; cursor: pointer; }
+  .icon { background: none; border: 0; color: var(--ink); font-size: 22px; cursor: pointer; line-height: 1; }
+  .settings { display: none; gap: 8px; font-size: 12px; color: var(--muted); }
+  .settings.open { display: flex; }
+  .settings input { width: 46px; background: var(--panel); color: var(--ink); border: 1px solid var(--edge); border-radius: 4px; padding: 3px 5px; }
+  .count { font-size: 11px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="modes" role="group" aria-label="Timer mode">
+    <button data-mode="focus" aria-pressed="true">Pomodoro</button>
+    <button data-mode="short" aria-pressed="false">Short Break</button>
+    <button data-mode="long" aria-pressed="false">Long Break</button>
+  </div>
+  <div class="time" id="time">25:00</div>
+  <div class="controls">
+    <button class="start" id="start">Start</button>
+    <button class="icon" id="reset" title="Reset" aria-label="Reset">↻</button>
+    <button class="icon" id="gear" title="Settings" aria-label="Settings">⚙</button>
+  </div>
+  <div class="settings" id="settings">
+    <label>Focus <input id="m-focus" type="number" min="1" max="120"></label>
+    <label>Short <input id="m-short" type="number" min="1" max="60"></label>
+    <label>Long <input id="m-long" type="number" min="1" max="60"></label>
+  </div>
+  <div class="count" id="count">Sessions today: 0</div>
+</div>
+<script>
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  };
+  const minutes = store.get("pomo-minutes", { focus: 25, short: 5, long: 15 });
+  const today = new Date().toDateString();
+  let sessions = store.get("pomo-day", today) === today ? store.get("pomo-sessions", 0) : 0;
+  let mode = "focus", left = minutes.focus * 60, timer = null, endAt = 0;
+
+  const $ = id => document.getElementById(id);
+  const fmt = s => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+  function draw() { $("time").textContent = fmt(left); $("count").textContent = `Sessions today: ${sessions}`; document.title = `${fmt(left)} · Pomodoro`; }
+
+  function chime() {
+    try {
+      const ctx = new AudioContext();
+      [523.25, 659.25, 783.99].forEach((f, i) => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.frequency.value = f; o.connect(g); g.connect(ctx.destination);
+        const t = ctx.currentTime + i * 0.25;
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.2, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+        o.start(t); o.stop(t + 1);
+      });
+    } catch {}
+  }
+  function stop() { clearInterval(timer); timer = null; $("start").textContent = "Start"; }
+  function setMode(m) {
+    stop(); mode = m; left = minutes[m] * 60;
+    document.querySelectorAll(".modes button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    draw();
+  }
+  function finish() {
+    stop(); chime();
+    if (mode === "focus") { sessions++; store.set("pomo-sessions", sessions); store.set("pomo-day", today); setMode(sessions % 4 === 0 ? "long" : "short"); }
+    else setMode("focus");
+  }
+  $("start").onclick = () => {
+    if (timer) return stop();
+    endAt = Date.now() + left * 1000;
+    $("start").textContent = "Pause";
+    timer = setInterval(() => { left = Math.max(0, Math.round((endAt - Date.now()) / 1000)); draw(); if (!left) finish(); }, 250);
+  };
+  $("reset").onclick = () => setMode(mode);
+  $("gear").onclick = () => $("settings").classList.toggle("open");
+  document.querySelectorAll(".modes button").forEach(b => b.onclick = () => setMode(b.dataset.mode));
+  ["focus", "short", "long"].forEach(k => {
+    const inp = $("m-" + k); inp.value = minutes[k];
+    inp.onchange = () => { minutes[k] = Math.max(1, Number(inp.value) || minutes[k]); store.set("pomo-minutes", minutes); if (!timer && mode === k) setMode(k); };
+  });
+  draw();
+</script>
+</body>
+</html>

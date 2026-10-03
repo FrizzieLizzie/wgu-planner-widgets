@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Progress</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Kit 1 (Home) palette */
+  :root {
+    --bg: #191919;
+    --ink: #F0D9E4;      /* Mountain Heather */
+    --fill: #C1A0AC;     /* Decanting */
+    --track: #2a2430;
+    --edge: #4A3F4B;     /* Funkie Friday */
+    --muted: #806C79;    /* Moonscape */
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: var(--bg); color: var(--ink); font-family: Inter, system-ui, sans-serif; }
+  body { padding: 14px 12px; }
+  .row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 10px; margin-bottom: 12px; }
+  .label { font-family: "Cormorant Garamond", Georgia, serif; font-size: 15px; letter-spacing: .04em; font-variant-numeric: lining-nums; }
+  .pct { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .bar { grid-column: 1 / -1; height: 14px; border: 1px solid var(--edge); border-radius: 4px; background: var(--track); overflow: hidden; }
+  .bar > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--muted), var(--fill)); transition: width .6s ease; }
+</style>
+</head>
+<body>
+  <div id="rows"></div>
+<script>
+  // Degree progress uses ?cu=<earned CUs> (default 27 transfer CUs) out of 112.
+  const params = new URLSearchParams(location.search);
+  const CU_EARNED = Number(params.get("cu") || 27);
+  const CU_TOTAL = 112;
+  const TERM1_START = new Date(2026, 9, 1); // Oct 1, 2026; terms are 6 months
+
+  function frac(start, end, now) { return Math.min(1, Math.max(0, (now - start) / (end - start))); }
+
+  function render() {
+    const now = new Date();
+    const monthsIn = (now.getFullYear() - TERM1_START.getFullYear()) * 12 + now.getMonth() - TERM1_START.getMonth();
+    const termIdx = Math.max(0, Math.floor(monthsIn / 6));
+    const termStart = new Date(TERM1_START.getFullYear(), TERM1_START.getMonth() + termIdx * 6, 1);
+    const termEnd = new Date(termStart.getFullYear(), termStart.getMonth() + 6, 1);
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
+    const weekEnd = new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + 7);
+
+    const rows = [
+      ["Degree", CU_EARNED / CU_TOTAL, `${CU_EARNED}/${CU_TOTAL} CU`],
+      [`Term ${termIdx + 1}`, frac(termStart, termEnd, now)],
+      [now.toLocaleString("en-US", { month: "long" }), frac(monthStart, monthEnd, now)],
+      ["Week", frac(weekStart, weekEnd, now)],
+    ];
+    document.getElementById("rows").innerHTML = rows.map(([label, f, note]) => {
+      const pct = Math.round(f * 100);
+      return `<div class="row"><span class="label">${label}</span><span class="pct">${note ? note + " · " : ""}${pct}%</span><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+    }).join("");
+  }
+  render();
+  setInterval(render, 60 * 1000);
+</script>
+</body>
+</html>
