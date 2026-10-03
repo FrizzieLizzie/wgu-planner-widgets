@@ -2,14 +2,16 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Home Header</title><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=EB+Garamond:wght@400;500&display=swap" rel="stylesheet">
-<style>:root{--a:#16131F;--b:#4A3F4B;--accent:#806C79;--glow:#F0D9E4;--muted:#C1A0AC;--ink:#F7EEF2}
+<style>/* Home palette: Chinese Black #0C1519, Dark Jungle Green #162127, Jet #3A3534, Coffee #724B39, Antique Brass #CF9D7B.
+   --muted and --ink are tints of Antique Brass so text stays legible on the dark greens. */
+:root{--a:#0C1519;--b:#162127;--jet:#3A3534;--accent:#724B39;--glow:#CF9D7B;--muted:#B98A6C;--ink:#F3E6DC}
 * { box-sizing: border-box; margin: 0; }
 html, body { background: #191919; }
 body { font-family: "EB Garamond", Georgia, serif; color: var(--ink); padding: 0; }
 .card {
   border-radius: 6px; padding: 20px 24px 16px;
   background: radial-gradient(ellipse at 88% 0%, color-mix(in srgb, var(--glow) 22%, transparent), transparent 55%),
-              linear-gradient(135deg, var(--a) 0%, var(--b) 100%);
+              linear-gradient(135deg, var(--a) 0%, var(--b) 60%, var(--jet) 100%);
   box-shadow: none;
 }
 .inner { border: 1px solid color-mix(in srgb, var(--glow) 45%, transparent); padding: 16px 20px 14px; }
@@ -45,7 +47,7 @@ h1.sm { font-size: 34px; font-style: normal; font-weight: 600; }
 .timeline { position: relative; margin-top: 4px; }
 .segs { display: flex; gap: 2px; height: 22px; }
 .seg { flex: 1; display: flex; align-items: center; justify-content: center; opacity: .9; }
-.seg span { font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: #16131F; font-weight: 500; }
+.seg span { font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: #0C1519; font-weight: 500; }
 .row { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
 .lab { width: 44px; font-size: 11px; letter-spacing: .14em; color: var(--muted); }
 .track { position: relative; flex: 1; height: 8px; background: color-mix(in srgb, var(--ink) 10%, transparent); }
@@ -72,7 +74,7 @@ h1.sm { font-size: 34px; font-style: normal; font-weight: 600; }
     <div class="segs"><div class="seg" style="background:#E36D2F" title="October"><span>Oct</span></div><div class="seg" style="background:#C7895C" title="November"><span>Nov</span></div><div class="seg" style="background:#C9474D" title="December"><span>Dec</span></div><div class="seg" style="background:#B3D5F1" title="January"><span>Jan</span></div><div class="seg" style="background:#E7AEBB" title="February"><span>Feb</span></div><div class="seg" style="background:#D7CBB2" title="March"><span>Mar</span></div></div>
     <div class="row"><div class="lab">C715</div><div class="track"><div class="span" style="background:#E36D2F" data-a="2026-10-01" data-b="2026-11-15"></div></div></div><div class="row"><div class="lab">C483</div><div class="track"><div class="span" style="background:#E36D2F" data-a="2026-10-02" data-b="2027-02-01"></div></div></div><div class="row"><div class="lab">E091</div><div class="track"><div class="span" style="background:#C7895C" data-a="2026-11-15" data-b="2026-12-31"></div></div></div><div class="row"><div class="lab">D370</div><div class="track"><div class="span" style="background:#E7AEBB" data-a="2027-02-01" data-b="2027-03-31"></div></div></div>
   </div>
-  <div class="palette"><span style="background:#16131F"></span><span style="background:#4A3F4B"></span><span style="background:#806C79"></span><span style="background:#C1A0AC"></span><span style="background:#F0D9E4"></span></div>
+  <div class="palette"><span style="background:#0C1519"></span><span style="background:#162127"></span><span style="background:#3A3534"></span><span style="background:#724B39"></span><span style="background:#CF9D7B"></span></div>
 </div></div>
 <script>
 const DAY = 864e5;

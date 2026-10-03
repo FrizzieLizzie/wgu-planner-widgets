@@ -6,14 +6,14 @@
 <title>Clock</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
 <style>
-  /* Kit 1 palette; background matches the outlined (no-fill) Notion panel, i.e. the page color. */
+  /* Home palette (Chinese Black, Dark Jungle Green, Jet, Coffee, Antique Brass); background matches the outlined (no-fill) Notion panel, i.e. the page color. */
   :root {
     --panel: #191919;
-    --ink: #F0D9E4;      /* Mountain Heather */
-    --rose: #C1A0AC;     /* Decanting */
-    --plum: #4A3F4B;     /* Funkie Friday */
-    --muted: #806C79;    /* Moonscape */
-    --night: #16131F;    /* Back in Black */
+    --ink: #F3E6DC;      /* Mountain Heather */
+    --rose: #CF9D7B;     /* Decanting */
+    --plum: #3A3534;     /* Funkie Friday */
+    --muted: #724B39;    /* Moonscape */
+    --night: #0C1519;    /* Back in Black */
   }
   * { margin: 0; box-sizing: border-box; }
   html, body { height: 100%; background: var(--panel); }
@@ -32,14 +32,14 @@
 <svg viewBox="0 0 240 240" aria-label="Analog clock">
   <defs>
     <radialGradient id="dial" cx="50%" cy="42%" r="62%">
-      <stop offset="0%" stop-color="#2d2433"/>
-      <stop offset="70%" stop-color="#1d1824"/>
-      <stop offset="100%" stop-color="#16131F"/>
+      <stop offset="0%" stop-color="#1F2E35"/>
+      <stop offset="70%" stop-color="#162127"/>
+      <stop offset="100%" stop-color="#0C1519"/>
     </radialGradient>
     <linearGradient id="bezel" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#F0D9E4"/>
-      <stop offset="45%" stop-color="#C1A0AC"/>
-      <stop offset="100%" stop-color="#806C79"/>
+      <stop offset="0%" stop-color="#F3E6DC"/>
+      <stop offset="45%" stop-color="#CF9D7B"/>
+      <stop offset="100%" stop-color="#724B39"/>
     </linearGradient>
     <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000" flood-opacity=".55"/>
@@ -47,16 +47,16 @@
   </defs>
 
   <!-- Case and double bezel -->
-  <circle cx="120" cy="120" r="114" fill="#16131F" filter="url(#soft)"/>
+  <circle cx="120" cy="120" r="114" fill="#0C1519" filter="url(#soft)"/>
   <circle cx="120" cy="120" r="111" fill="none" stroke="url(#bezel)" stroke-width="3"/>
-  <circle cx="120" cy="120" r="105" fill="url(#dial)" stroke="#4A3F4B" stroke-width="1"/>
+  <circle cx="120" cy="120" r="105" fill="url(#dial)" stroke="#3A3534" stroke-width="1"/>
   <circle cx="120" cy="120" r="101" fill="none" stroke="url(#bezel)" stroke-width=".6" opacity=".7"/>
 
   <g id="ticks"></g>
   <g id="numerals"></g>
 
   <!-- Inner chapter ring and the month's flower -->
-  <circle cx="120" cy="120" r="58" fill="none" stroke="#4A3F4B" stroke-width=".8" stroke-dasharray="1.5 3"/>
+  <circle cx="120" cy="120" r="58" fill="none" stroke="#3A3534" stroke-width=".8" stroke-dasharray="1.5 3"/>
   <image id="flower" x="100" y="60" width="40" height="40" opacity=".85" preserveAspectRatio="xMidYMid meet"/>
 
   <text id="time" x="120" y="152"></text>
@@ -64,17 +64,17 @@
 
   <!-- Hands: tapered hour and minute, seconds with counterweight -->
   <g id="h" filter="url(#soft)">
-    <path d="M120 128 L116.2 120 L118.6 76 L120 66 L121.4 76 L123.8 120 Z" fill="#F0D9E4"/>
+    <path d="M120 128 L116.2 120 L118.6 76 L120 66 L121.4 76 L123.8 120 Z" fill="#F3E6DC"/>
   </g>
   <g id="m" filter="url(#soft)">
-    <path d="M120 130 L117.4 120 L119.1 46 L120 34 L120.9 46 L122.6 120 Z" fill="#F0D9E4"/>
+    <path d="M120 130 L117.4 120 L119.1 46 L120 34 L120.9 46 L122.6 120 Z" fill="#F3E6DC"/>
   </g>
   <g id="s">
-    <line x1="120" y1="140" x2="120" y2="28" stroke="#C1A0AC" stroke-width="1" stroke-linecap="round"/>
-    <circle cx="120" cy="136" r="3.2" fill="none" stroke="#C1A0AC" stroke-width="1"/>
+    <line x1="120" y1="140" x2="120" y2="28" stroke="#CF9D7B" stroke-width="1" stroke-linecap="round"/>
+    <circle cx="120" cy="136" r="3.2" fill="none" stroke="#CF9D7B" stroke-width="1"/>
   </g>
   <circle cx="120" cy="120" r="5" fill="url(#bezel)"/>
-  <circle cx="120" cy="120" r="1.8" fill="#16131F"/>
+  <circle cx="120" cy="120" r="1.8" fill="#0C1519"/>
 </svg>
 <script>
   const NS = "http://www.w3.org/2000/svg";
